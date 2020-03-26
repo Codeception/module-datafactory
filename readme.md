@@ -1,6 +1,6 @@
 # Data Factory module for Codeception
 
-[![Build Status](https://travis-ci.org/Codeception/module-datafactory.svg?branch=master)](https://travis-ci.org/Codeception/module-datafactory)
+![Build Status](https://github.com/Codeception/module-datafactory/workflows/CI/badge.svg)
 
 ## Installation
 
