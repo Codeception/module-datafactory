@@ -17,9 +17,6 @@
         "league/factory-muffin": "^3.0",
         "league/factory-muffin-faker": "^2.1"
     },
-    "require-dev": {
-        "codeception/util-robohelpers": "dev-master"
-    },
     "autoload":{
         "classmap": ["src/"]
     },
