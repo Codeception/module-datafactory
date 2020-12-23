@@ -120,6 +120,36 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * ```php
  * 'user' => 'entity|User'
  * ```
+ *
+ * ### Custom store
+ * 
+ * You can define a custom store for Factory Muffin using `customStore` parameter. It can be a simple class or a factory with `create` method.
+ * The instantiated object must implement `\League\FactoryMuffin\Stores\StoreInterface`.
+ * 
+ * Store factory example:
+ * ```yaml
+ * modules:
+ *     enabled:
+ *         - DataFactory:
+ *             customStore: \common\tests\store\MyCustomStoreFactory
+ * ```
+ * 
+ * ```php
+ * use League\FactoryMuffin\Stores\StoreInterface;
+ * 
+ * class MyCustomStoreFactory
+ * {
+ *     public function create(): StoreInterface
+ *     {
+ *         return CustomStore();
+ *     }
+ * }
+ * 
+ * class CustomStore implements StoreInterface
+ * {
+ *     // ...
+ * }
+ * ```
  */
 class DataFactory extends \Codeception\Module implements DependsOnModule, RequiresPackage
 {
@@ -145,7 +175,7 @@ EOF;
      */
     public $factoryMuffin;
 
-    protected $config = ['factories' => null, 'storeClass' => null];
+    protected $config = ['factories' => null, 'customStore' => null];
 
     public function _requires()
     {
@@ -175,8 +205,13 @@ EOF;
      */
     protected function getStore()
     {
-        if (!empty($this->config['storeClass'])) {
-            return new $this->config['storeClass'];
+        if (!empty($this->config['customStore'])) {
+            $store = new $this->config['customStore'];
+            if (method_exists($store, 'create')) {
+                return $store->create();
+            }
+
+            return $store;
         }
 
         return $this->ormModule instanceof DataMapper
