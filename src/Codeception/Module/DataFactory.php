@@ -9,6 +9,7 @@ use Codeception\Lib\Interfaces\RequiresPackage;
 use Codeception\TestInterface;
 use League\FactoryMuffin\FactoryMuffin;
 use League\FactoryMuffin\Stores\RepositoryStore;
+use League\FactoryMuffin\Stores\StoreInterface;
 
 /**
  * DataFactory allows you to easily generate and create test data using [**FactoryMuffin**](https://github.com/thephpleague/factory-muffin).
@@ -144,7 +145,7 @@ EOF;
      */
     public $factoryMuffin;
 
-    protected $config = ['factories' => null];
+    protected $config = ['factories' => null, 'storeClass' => null];
 
     public function _requires()
     {
@@ -174,6 +175,10 @@ EOF;
      */
     protected function getStore()
     {
+        if (!empty($this->config['storeClass'])) {
+            return new $this->config['storeClass'];
+        }
+
         return $this->ormModule instanceof DataMapper
             ? new RepositoryStore($this->ormModule->_getEntityManager()) // for Doctrine
             : null;
