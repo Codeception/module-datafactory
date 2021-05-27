@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Module;
 
 use Codeception\Lib\Interfaces\DataMapper;
@@ -7,6 +10,7 @@ use Codeception\Lib\Interfaces\ORM;
 use Codeception\Exception\ModuleException;
 use Codeception\Lib\Interfaces\RequiresPackage;
 use Codeception\TestInterface;
+use League\FactoryMuffin\Definition;
 use League\FactoryMuffin\FactoryMuffin;
 use League\FactoryMuffin\Stores\RepositoryStore;
 use League\FactoryMuffin\Stores\StoreInterface;
@@ -153,6 +157,9 @@ use League\FactoryMuffin\Stores\StoreInterface;
  */
 class DataFactory extends \Codeception\Module implements DependsOnModule, RequiresPackage
 {
+    /**
+     * @var string
+     */
     protected $dependencyMessage = <<<EOF
 ORM module (like Doctrine2) or Framework module with ActiveRecord support is required:
 --
@@ -175,12 +182,15 @@ EOF;
      */
     public $factoryMuffin;
 
+    /**
+     * @var array
+     */
     protected $config = ['factories' => null, 'customStore' => null];
 
     public function _requires()
     {
         return [
-            'League\FactoryMuffin\FactoryMuffin' => '"league/factory-muffin": "^3.0"',
+            \League\FactoryMuffin\FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
         ];
     }
 
@@ -219,7 +229,7 @@ EOF;
             : null;
     }
 
-    public function _inject(ORM $orm)
+    public function _inject(ORM $orm): void
     {
         $this->ormModule = $orm;
     }
@@ -227,7 +237,11 @@ EOF;
     public function _after(TestInterface $test)
     {
         $skipCleanup = array_key_exists('cleanup', $this->config) && $this->config['cleanup'] === false;
-        if ($skipCleanup || $this->ormModule->_getConfig('cleanup')) {
+        $cleanupOrmModule_Config = $this->ormModule->_getConfig('cleanup');
+        if ($skipCleanup) {
+            return;
+        }
+        if ($cleanupOrmModule_Config) {
             return;
         }
         $this->factoryMuffin->deleteSaved();
@@ -235,7 +249,7 @@ EOF;
 
     public function _depends()
     {
-        return ['Codeception\Lib\Interfaces\ORM' => $this->dependencyMessage];
+        return [\Codeception\Lib\Interfaces\ORM::class => $this->dependencyMessage];
     }
 
 
@@ -262,14 +276,9 @@ EOF;
      *
      * ```
      *
-     * @param string $model
-     * @param array $fields
-     *
-     * @return \League\FactoryMuffin\Definition
-     *
      * @throws \League\FactoryMuffin\Exceptions\DefinitionAlreadyDefinedException
      */
-    public function _define($model, $fields)
+    public function _define(string $model, array $fields): Definition
     {
         return $this->factoryMuffin->define($model)->setDefinitions($fields);
     }
@@ -284,12 +293,9 @@ EOF;
      *
      * Returns an instance of created user.
      *
-     * @param string $name
-     * @param array $extraAttrs
-     *
      * @return object
      */
-    public function have($name, array $extraAttrs = [])
+    public function have(string $name, array $extraAttrs = [])
     {
         return $this->factoryMuffin->create($name, $extraAttrs);
     }
@@ -306,12 +312,9 @@ EOF;
      *
      * Returns an instance of created user without creating a record in database.
      *
-     * @param string $name
-     * @param array $extraAttrs
-     *
      * @return object
      */
-    public function make($name, array $extraAttrs = [])
+    public function make(string $name, array $extraAttrs = [])
     {
         return $this->factoryMuffin->instance($name, $extraAttrs);
     }
@@ -324,13 +327,9 @@ EOF;
      * $I->haveMultiple('User', 10, ['is_active' => true]); // create 10 active users
      * ```
      *
-     * @param string $name
-     * @param int $times
-     * @param array $extraAttrs
-     *
-     * @return \object[]
+     * @return object[]
      */
-    public function haveMultiple($name, $times, array $extraAttrs = [])
+    public function haveMultiple(string $name, int $times, array $extraAttrs = []): array
     {
         return $this->factoryMuffin->seed($times, $name, $extraAttrs);
     }
