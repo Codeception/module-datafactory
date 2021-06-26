@@ -27,10 +27,14 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * }
  * ```
  *
- * Generation rules can be defined in a factories file. You will need to create `factories.php` (it is recommended to store it in `_support` dir)
- * Follow [FactoryMuffin documentation](https://github.com/thephpleague/factory-muffin) to set valid rules.
- * Random data provided by [Faker](https://github.com/fzaninotto/Faker) library.
+ * Generation rules can be defined in a factories file. 
+ * Create a folder for factories files: `tests/_support/factories`.
  *
+ * Create an ampty PHP file inside that folder `factories.php`.
+ * Follow [FactoryMuffin documentation](https://github.com/thephpleague/factory-muffin) to set valid rules.
+ * Randomly generated data provided by [Faker](https://github.com/fzaninotto/Faker) library.
+ *
+ * Here is the sample factory file:
  * ```php
  * <?php
  * use League\FactoryMuffin\Faker\Facade as Faker;
@@ -60,12 +64,9 @@ use League\FactoryMuffin\Stores\StoreInterface;
  *             depends: Yii2
  * ```
  *
- * (you can also use Laravel5 and Phalcon).
+ * (you can also use Laravel and Phalcon).
  *
- * In this example factories are loaded from `tests/_support/factories` directory. Please note that this directory is relative from the codeception.yml file (so for Yii2 it would be codeception/_support/factories).
- * You should create this directory manually and create PHP files in it with factories definitions following [official documentation](https://github.com/thephpleague/factory-muffin#usage).
- *
- * In cases you want to use data from database inside your factory definitions you can define them in Helper.
+ * In cases you want to use data from database inside your factory definitions you can define them in a Helper.
  * For instance, if you use Doctrine, this allows you to access `EntityManager` inside a definition.
  *
  * To proceed you should create Factories helper via `generate:helper` command and enable it:
