@@ -21,6 +21,8 @@ composer require "codeception/module-datafactory" --dev
 
 See [the module documentation](https://codeception.com/docs/modules/DataFactory).
 
+[Changelog](https://github.com/Codeception/module-datafactory/releases)
+
 ## License
 
 `Codeception Module DataFactory` is open-sourced software licensed under the [MIT](/LICENSE) License.
