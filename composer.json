@@ -13,9 +13,9 @@
 	"minimum-stability": "RC",
 	"require": {
 		"php": "^7.1 || ^8.0",
-		"codeception/codeception": "^4.0",
-		"league/factory-muffin": "^3.0",
-		"league/factory-muffin-faker": "^2.1"
+		"codeception/codeception": "^5.0 || *@dev",
+		"league/factory-muffin": "^3.3",
+		"league/factory-muffin-faker": "^2.3"
 	},
 	"autoload": {
 		"classmap": [
