@@ -10,12 +10,12 @@
 			"name": "Michael Bodnarchuk"
 		}
 	],
-	"minimum-stability": "RC",
+	"minimum-stability": "dev",
 	"require": {
-		"php": "^7.4 || ^8.0",
-		"codeception/codeception": "^4.0",
-		"league/factory-muffin": "^3.0",
-		"league/factory-muffin-faker": "^2.1"
+		"php": "^8.0",
+		"codeception/codeception": "^5.0.0-alpha1",
+		"league/factory-muffin": "^3.3",
+		"league/factory-muffin-faker": "^2.3"
 	},
 	"autoload": {
 		"classmap": [
