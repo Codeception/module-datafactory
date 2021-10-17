@@ -158,10 +158,7 @@ use League\FactoryMuffin\Stores\StoreInterface;
  */
 class DataFactory extends \Codeception\Module implements DependsOnModule, RequiresPackage
 {
-    /**
-     * @var string
-     */
-    protected $dependencyMessage = <<<EOF
+    protected string $dependencyMessage = <<<EOF
 ORM module (like Doctrine2) or Framework module with ActiveRecord support is required:
 --
 modules:
@@ -173,15 +170,10 @@ EOF;
 
     /**
      * ORM module on which we we depend on.
-     *
-     * @var ORM
      */
-    public $ormModule;
+    public ?ORM $ormModule = null;
 
-    /**
-     * @var FactoryMuffin
-     */
-    public $factoryMuffin;
+    public ?FactoryMuffin $factoryMuffin = null;
 
     /**
      * @var array
@@ -191,7 +183,7 @@ EOF;
     public function _requires()
     {
         return [
-            \League\FactoryMuffin\FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
+            FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
         ];
     }
 
@@ -206,15 +198,13 @@ EOF;
                 if ($realpath === false) {
                     throw new ModuleException($this, 'The path to one of your factories is not correct. Please specify the directory relative to the codeception.yml file (ie. _support/factories).');
                 }
+
                 $this->factoryMuffin->loadFactories($realpath);
             }
         }
     }
 
-    /**
-     * @return StoreInterface|null
-     */
-    protected function getStore()
+    protected function getStore(): ?StoreInterface
     {
         if (!empty($this->config['customStore'])) {
             $store = new $this->config['customStore'];
@@ -242,17 +232,18 @@ EOF;
         if ($skipCleanup) {
             return;
         }
+
         if ($cleanupOrmModule_Config) {
             return;
         }
+
         $this->factoryMuffin->deleteSaved();
     }
 
     public function _depends()
     {
-        return [\Codeception\Lib\Interfaces\ORM::class => $this->dependencyMessage];
+        return [ORM::class => $this->dependencyMessage];
     }
-
 
     /**
      * @throws ModuleException
@@ -263,6 +254,7 @@ EOF;
         if (!$skipCleanup && !$this->ormModule->_getConfig('cleanup')) {
             $this->factoryMuffin->deleteSaved();
         }
+
         $this->_beforeSuite($settings);
     }
 
@@ -274,7 +266,6 @@ EOF;
      *     'name' => $faker->name,
      *     'email' => $faker->email
      * ]);
-     *
      * ```
      *
      * @throws \League\FactoryMuffin\Exceptions\DefinitionAlreadyDefinedException
@@ -293,10 +284,8 @@ EOF;
      * ```
      *
      * Returns an instance of created user.
-     *
-     * @return object
      */
-    public function have(string $name, array $extraAttrs = [])
+    public function have(string $name, array $extraAttrs = []): object
     {
         return $this->factoryMuffin->create($name, $extraAttrs);
     }
@@ -312,10 +301,8 @@ EOF;
      * ```
      *
      * Returns an instance of created user without creating a record in database.
-     *
-     * @return object
      */
-    public function make(string $name, array $extraAttrs = [])
+    public function make(string $name, array $extraAttrs = []): object
     {
         return $this->factoryMuffin->instance($name, $extraAttrs);
     }
