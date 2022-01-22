@@ -188,7 +188,7 @@ EOF;
      */
     protected $config = ['factories' => null, 'customStore' => null];
 
-    public function _requires()
+    public function _requires(): array
     {
         return [
             \League\FactoryMuffin\FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
@@ -248,7 +248,7 @@ EOF;
         $this->factoryMuffin->deleteSaved();
     }
 
-    public function _depends()
+    public function _depends(): array
     {
         return [\Codeception\Lib\Interfaces\ORM::class => $this->dependencyMessage];
     }
