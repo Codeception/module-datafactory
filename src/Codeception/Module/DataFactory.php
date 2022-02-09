@@ -179,12 +179,18 @@ EOF;
 
     public ?FactoryMuffin $factoryMuffin = null;
 
-    protected array $config = ['factories' => null, 'customStore' => null];
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $config = [
+        'factories' => null,
+        'customStore' => null,
+    ];
 
     public function _requires(): array
     {
         return [
-            FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
+            FactoryMuffin::class => '"league/factory-muffin": "^3.3"',
         ];
     }
 
@@ -243,7 +249,9 @@ EOF;
 
     public function _depends(): array
     {
-        return [ORM::class => $this->dependencyMessage];
+        return [
+            ORM::class => $this->dependencyMessage,
+        ];
     }
 
     /**
