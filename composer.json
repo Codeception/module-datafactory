@@ -18,6 +18,9 @@
 		"league/factory-muffin": "^3.3",
 		"league/factory-muffin-faker": "^2.3"
 	},
+	"require-dev": {
+		"phpstan/phpstan": "^1.0"
+	},
 	"conflict": {
 		"codeception/codeception": "<5.0"
 	},

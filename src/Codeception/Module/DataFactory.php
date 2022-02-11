@@ -171,9 +171,9 @@ modules:
 EOF;
 
     /**
-     * ORM module on which we we depend on.
+     * ORM module on which we depend on.
      *
-     * @var Module
+     * @var ORM|null
      */
     public ?ORM $ormModule = null;
 
@@ -187,6 +187,9 @@ EOF;
         'customStore' => null,
     ];
 
+    /**
+     * @return array<string, string>
+     */
     public function _requires(): array
     {
         return [
@@ -194,7 +197,10 @@ EOF;
         ];
     }
 
-    public function _beforeSuite($settings = [])
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function _beforeSuite(array $settings = []): void
     {
         $store = $this->getStore();
         $this->factoryMuffin = new FactoryMuffin($store);
@@ -232,7 +238,7 @@ EOF;
         $this->ormModule = $orm;
     }
 
-    public function _after(TestInterface $test)
+    public function _after(TestInterface $test): void
     {
         $skipCleanup = array_key_exists('cleanup', $this->config) && $this->config['cleanup'] === false;
         $cleanupOrmModuleConfig = $this->ormModule->_getConfig('cleanup');
@@ -247,6 +253,9 @@ EOF;
         $this->factoryMuffin->deleteSaved();
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function _depends(): array
     {
         return [
@@ -257,14 +266,14 @@ EOF;
     /**
      * @throws ModuleException
      */
-    public function onReconfigure($settings = [])
+    public function onReconfigure(): void
     {
         $skipCleanup = array_key_exists('cleanup', $this->config) && $this->config['cleanup'] === false;
         if (!$skipCleanup && !$this->ormModule->_getConfig('cleanup')) {
             $this->factoryMuffin->deleteSaved();
         }
 
-        $this->_beforeSuite($settings);
+        $this->_beforeSuite($this->config);
     }
 
     /**
@@ -277,6 +286,7 @@ EOF;
      * ]);
      * ```
      *
+     * @param array<string, mixed> $fields
      * @throws FactoryMuffinDefinitionAlreadyDefinedException
      */
     public function _define(string $model, array $fields): Definition
@@ -293,6 +303,8 @@ EOF;
      * ```
      *
      * Returns an instance of created user.
+     *
+     * @param array<string, mixed> $extraAttrs
      */
     public function have(string $name, array $extraAttrs = []): object
     {
@@ -310,6 +322,8 @@ EOF;
      * ```
      *
      * Returns an instance of created user without creating a record in database.
+     *
+     * @param array<string, mixed> $extraAttrs
      */
     public function make(string $name, array $extraAttrs = []): object
     {
@@ -324,6 +338,7 @@ EOF;
      * $I->haveMultiple('User', 10, ['is_active' => true]); // create 10 active users
      * ```
      *
+     * @param array<string, mixed> $extraAttrs
      * @return object[]
      */
     public function haveMultiple(string $name, int $times, array $extraAttrs = []): array

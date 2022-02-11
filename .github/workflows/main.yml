@@ -28,3 +28,6 @@ jobs:
 
     - name: Run php lint
       run: php -l src/Codeception/Module/DataFactory.php
+
+    - name: Run source code analysis
+      run: php vendor/bin/phpstan
