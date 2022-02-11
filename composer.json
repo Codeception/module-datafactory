@@ -18,6 +18,9 @@
 		"league/factory-muffin": "^3.3",
 		"league/factory-muffin-faker": "^2.3"
 	},
+	"conflict": {
+		"codeception/codeception": "<5.0"
+	},
 	"minimum-stability": "dev",
 	"autoload": {
 		"classmap": [
