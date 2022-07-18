@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Codeception\Module;
 
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\Interfaces\DataMapper;
 use Codeception\Lib\Interfaces\DependsOnModule;
 use Codeception\Lib\Interfaces\ORM;
-use Codeception\Exception\ModuleException;
 use Codeception\Lib\Interfaces\RequiresPackage;
+use Codeception\Module;
 use Codeception\TestInterface;
 use League\FactoryMuffin\Definition;
+use League\FactoryMuffin\Exceptions\DefinitionAlreadyDefinedException as FactoryMuffinDefinitionAlreadyDefinedException;
 use League\FactoryMuffin\FactoryMuffin;
 use League\FactoryMuffin\Stores\RepositoryStore;
 use League\FactoryMuffin\Stores\StoreInterface;
@@ -27,10 +29,10 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * }
  * ```
  *
- * Generation rules can be defined in a factories file. 
+ * Generation rules can be defined in a factories file.
  * Create a folder for factories files: `tests/_support/factories`.
  *
- * Create an ampty PHP file inside that folder `factories.php`.
+ * Create an empty PHP file inside that folder `factories.php`.
  * Follow [FactoryMuffin documentation](https://github.com/thephpleague/factory-muffin) to set valid rules.
  * Randomly generated data provided by [Faker](https://github.com/fzaninotto/Faker) library.
  *
@@ -127,10 +129,10 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * ```
  *
  * ### Custom store
- * 
+ *
  * You can define a custom store for Factory Muffin using `customStore` parameter. It can be a simple class or a factory with `create` method.
  * The instantiated object must implement `\League\FactoryMuffin\Stores\StoreInterface`.
- * 
+ *
  * Store factory example:
  * ```yaml
  * modules:
@@ -138,10 +140,10 @@ use League\FactoryMuffin\Stores\StoreInterface;
  *         - DataFactory:
  *             customStore: \common\tests\store\MyCustomStoreFactory
  * ```
- * 
+ *
  * ```php
  * use League\FactoryMuffin\Stores\StoreInterface;
- * 
+ *
  * class MyCustomStoreFactory
  * {
  *     public function create(): StoreInterface
@@ -149,14 +151,14 @@ use League\FactoryMuffin\Stores\StoreInterface;
  *         return CustomStore();
  *     }
  * }
- * 
+ *
  * class CustomStore implements StoreInterface
  * {
  *     // ...
  * }
  * ```
  */
-class DataFactory extends \Codeception\Module implements DependsOnModule, RequiresPackage
+class DataFactory extends Module implements DependsOnModule, RequiresPackage
 {
     protected string $dependencyMessage = <<<EOF
 ORM module (like Doctrine2) or Framework module with ActiveRecord support is required:
@@ -170,20 +172,25 @@ EOF;
 
     /**
      * ORM module on which we we depend on.
+     *
+     * @var Module
      */
     public ?ORM $ormModule = null;
 
     public ?FactoryMuffin $factoryMuffin = null;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $config = ['factories' => null, 'customStore' => null];
+    protected array $config = [
+        'factories' => null,
+        'customStore' => null,
+    ];
 
     public function _requires(): array
     {
         return [
-            FactoryMuffin::class => '"league/factory-muffin": "^3.0"',
+            FactoryMuffin::class => '"league/factory-muffin": "^3.3"',
         ];
     }
 
@@ -193,8 +200,8 @@ EOF;
         $this->factoryMuffin = new FactoryMuffin($store);
 
         if ($this->config['factories']) {
-            foreach ((array) $this->config['factories'] as $factoryPath) {
-                $realpath = realpath(codecept_root_dir().$factoryPath);
+            foreach ((array)$this->config['factories'] as $factoryPath) {
+                $realpath = realpath(codecept_root_dir() . $factoryPath);
                 if ($realpath === false) {
                     throw new ModuleException($this, 'The path to one of your factories is not correct. Please specify the directory relative to the codeception.yml file (ie. _support/factories).');
                 }
@@ -228,12 +235,12 @@ EOF;
     public function _after(TestInterface $test)
     {
         $skipCleanup = array_key_exists('cleanup', $this->config) && $this->config['cleanup'] === false;
-        $cleanupOrmModule_Config = $this->ormModule->_getConfig('cleanup');
+        $cleanupOrmModuleConfig = $this->ormModule->_getConfig('cleanup');
         if ($skipCleanup) {
             return;
         }
 
-        if ($cleanupOrmModule_Config) {
+        if ($cleanupOrmModuleConfig) {
             return;
         }
 
@@ -242,7 +249,9 @@ EOF;
 
     public function _depends(): array
     {
-        return [ORM::class => $this->dependencyMessage];
+        return [
+            ORM::class => $this->dependencyMessage,
+        ];
     }
 
     /**
@@ -268,7 +277,7 @@ EOF;
      * ]);
      * ```
      *
-     * @throws \League\FactoryMuffin\Exceptions\DefinitionAlreadyDefinedException
+     * @throws FactoryMuffinDefinitionAlreadyDefinedException
      */
     public function _define(string $model, array $fields): Definition
     {
