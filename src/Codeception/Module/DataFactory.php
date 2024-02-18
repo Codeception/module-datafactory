@@ -77,7 +77,7 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * modules:
  *     enabled:
  *         - DataFactory:
- *             depends: Doctrine2
+ *             depends: Doctrine
  *         - \Helper\Factories
  *
  * ```
@@ -90,7 +90,7 @@ use League\FactoryMuffin\Stores\StoreInterface;
  * {
  *      $factory = $this->getModule('DataFactory');
  *      // let us get EntityManager from Doctrine
- *      $em = $this->getModule('Doctrine2')->_getEntityManager();
+ *      $em = $this->getModule('Doctrine')->_getEntityManager();
  *
  *      $factory->_define(User::class, [
  *
@@ -161,12 +161,12 @@ use League\FactoryMuffin\Stores\StoreInterface;
 class DataFactory extends Module implements DependsOnModule, RequiresPackage
 {
     protected string $dependencyMessage = <<<EOF
-ORM module (like Doctrine2) or Framework module with ActiveRecord support is required:
+ORM module (like Doctrine) or Framework module with ActiveRecord support is required:
 --
 modules:
     enabled:
         - DataFactory:
-            depends: Doctrine2
+            depends: Doctrine
 --
 EOF;
 
